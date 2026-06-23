@@ -5,6 +5,15 @@ var app = builder.Build();
 //enabling the routing middleware for our application
 app.UseRouting();
 
+//tracking endpoint
+app.Use(async (context, next) =>
+{
+    Endpoint endpoint = context.GetEndpoint();
+    if(endpoint != null)
+        await context.Response.WriteAsync(endpoint.DisplayName);
+    await next();
+});
+
 //creating endpoints for our application
 app.UseEndpoints( async endpoint =>
 {
