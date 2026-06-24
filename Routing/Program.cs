@@ -9,8 +9,11 @@ app.UseRouting();
 app.Use(async (context, next) =>
 {
     Endpoint endpoint = context.GetEndpoint();
-    if(endpoint != null)
-        await context.Response.WriteAsync(endpoint.DisplayName);
+    if (endpoint != null)
+    {
+        await context.Response.WriteAsync( "Typed URL: "+ endpoint.DisplayName);
+        await context.Response.WriteAsync("\n");
+    }
     await next();
 });
 
@@ -28,6 +31,30 @@ app.UseEndpoints( async endpoint =>
     {
         context.Response.WriteAsync("New Product! Created");
     });
+
+    //Route Parameters : url segments captures values specidied at that position
+    endpoint.MapGet("/Book/{id:int}", async (context) =>
+    {
+        var id = Convert.ToInt32(context.Request.RouteValues["id"]);
+        context.Response.WriteAsync($"Your in Book! Page with id: {id}");
+    });
+    endpoint.MapGet("/Book/Author/{name?}", async (context) =>
+    {
+        //this is direct casting as string if missing name the name is null not "" empty string
+        //var name = context.Request.RouteValues["name"] as string;
+        var name = Convert.ToString(context.Request.RouteValues["name"]);
+        if (!string.IsNullOrEmpty(name))
+        {
+            
+            context.Response.WriteAsync($"Your in Book! Author name : {name}");
+        }
+        else
+        {
+            context.Response.WriteAsync($"Your at /Book/Author");
+        }
+        
+    });
+
 });
  
 //if no URL matches the above endpoints, then this will be execute
