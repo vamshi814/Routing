@@ -1,4 +1,10 @@
 var builder = WebApplication.CreateBuilder(args);
+
+//step2 for custom route constraints
+builder.Services.AddRouting(options =>
+{
+    options.ConstraintMap.Add("alphaNumeric", typeof(Routing.CustomConstraints.AlphaNumericConstraint));
+});
 var app = builder.Build();
 
 
@@ -53,6 +59,12 @@ app.UseEndpoints( async endpoint =>
             context.Response.WriteAsync($"Your at /Book/Author");
         }
         
+    });
+    //for custom route constraints
+    endpoint.MapGet("/User/{username:alphaNumeric}", async (context) =>
+    {
+        var username = Convert.ToString(context.Request.RouteValues["username"]);
+        context.Response.WriteAsync($"Your in User! Page with username: {username}");
     });
 
 });
